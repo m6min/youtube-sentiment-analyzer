@@ -1,7 +1,9 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, ForeignKey, DateTime, Text
 from datetime import datetime
-from backend.app.db.base import Base
+
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.db.base import Base
 
 
 class Video(Base):
@@ -9,8 +11,13 @@ class Video(Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     channel_id: Mapped[str] = mapped_column(String, index=True)
     title: Mapped[str] = mapped_column(String)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), nullable=False)
+    is_analyzed: Mapped[bool] = mapped_column(default=False)
+    clickbait_score: Mapped[float] = mapped_column(nullable=True)
+    # relevant, neutral or clickbait
+    overall_sentiment: Mapped[str] = mapped_column(String, nullable=True)
     # one to many relationship
-    comments: Mapped[list['Comment']] = relationship(back_populates="videos", cascade="all, delete-orphan")
+    comments: Mapped[list['Comment']] = relationship(back_populates="video", cascade="all, delete-orphan")
 
 class Comment(Base):
     __tablename__ = "comments"

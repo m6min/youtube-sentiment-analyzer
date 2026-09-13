@@ -1,7 +1,8 @@
 import httpx
 from fastapi import HTTPException
+
 from app.core.config import settings
-from backend.app.utils.tex_cleaning import clean_text
+from app.utils.text_cleaning import clean_text
 
 YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3/videos"
 
@@ -75,12 +76,15 @@ async def get_video_comments(video_id: str, channel_owner_id: str, max_pages: in
                     raise HTTPException(detail="There was an error while trying to get comments. Please try again.", status_code=response.status_code)
             if "items" in data:
                     for item in data["items"]:
+                        comment_id = item["id"]
                         comment_snippet = item["snippet"]["topLevelComment"]["snippet"]
+                        # If comment written by channel owner we will skip it
                         comment_author_id = comment_snippet.get("authorChannelId", {}).get("value", "")
                         if comment_author_id == channel_owner_id:
                             continue
                         clean_comment = clean_text(comment_snippet["textDisplay"])
                         comments.append({
+                            "comment_id": comment_id,
                             "author": comment_snippet["authorDisplayName"],
                             "text": clean_comment,
                             "like_count": comment_snippet["likeCount"],
