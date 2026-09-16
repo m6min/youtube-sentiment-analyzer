@@ -24,17 +24,17 @@ async def analyze(request: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid video url")
     db_video = await get_video(db, video_id)
     if db_video and db_video.is_analyzed:
-            return {
-                "status": "success",
-                "source": "database",
-                "video_info": {
-                    "id": db_video.id,
-                    "title": db_video.title
-                },
-                "analyze_results":{
-                    "clickbait_score": db_video.clickbait_score,
-                    "overall_sentiment": db_video.overall_sentiment
-                }
+        return {
+            "status": "success",
+            "source": "database",
+            "video_info": {
+                "id": db_video.id,
+                "title": db_video.title
+            },
+            "analyze_results":{
+                "clickbait_score": db_video.clickbait_score,
+                "overall_sentiment": db_video.overall_sentiment
+            }
             }
     video_data = await get_video_details(video_id)
     owner_id = video_data["channel_id"]

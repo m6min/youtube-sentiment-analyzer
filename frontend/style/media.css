@@ -1,0 +1,68 @@
+@media screen and (max-width: 300px){
+    .input-group {
+        grid-template-columns: 1fr;
+    }
+}
+@media screen and (min-width: 640px) and (max-width: 991px){
+    p {
+        font-size: 19px;
+    }
+    h1 {
+        font-size: 28px;
+    }
+    footer > a {
+        font-size: 16px;
+    }
+    .icon {
+        font-size: 20px;
+    }
+    .input-group > p, .input-group > input {
+        font-size: 14px;
+    }
+    .input-group > button {
+        font-size: 16px;
+    }
+}
+@media screen and (min-width: 992px) and (max-width: 1279px){
+    p {
+        font-size: 20px;
+    }
+    h1 {
+        font-size: 30px;
+    }
+    footer > a {
+        font-size: 16px;
+    }
+    .icon {
+        font-size: 20px;
+    }
+    .input-group > p, .input-group > input {
+        font-size: 15px;
+    }
+    .input-group > button {
+        font-size: 17px;
+    }
+}
+@media screen and (min-width: 1280px){
+    .container {
+        max-width: 600px;
+    }
+    p {
+        font-size: 21px;
+    }
+    h1 {
+        font-size: 30px;
+    }
+    footer > a {
+        font-size: 16px;
+    }
+    .icon {
+        font-size: 20px;
+    }
+    .input-group > p, .input-group > input {
+        font-size: 15px;
+    }
+    .input-group > button {
+        font-size: 17px;
+    }
+}
