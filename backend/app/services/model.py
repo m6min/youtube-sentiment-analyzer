@@ -1,5 +1,5 @@
 import os
-
+from dotenv import load_dotenv
 from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
                           pipeline)
 
@@ -8,9 +8,8 @@ class CommentAnalyzer:
     def __init__(self):
         model_name = "savasy/bert-base-turkish-sentiment-cased"
 
+        load_dotenv()
         hf_token = os.getenv("HF_TOKEN")
-        if not hf_token:
-            tokenizer = AutoTokenizer.from_pretrained(model_name)
         tokenizer = AutoTokenizer.from_pretrained(model_name, token=hf_token)
         model = AutoModelForSequenceClassification.from_pretrained(model_name)
         self.analyzer = pipeline(
@@ -27,7 +26,7 @@ class CommentAnalyzer:
         negative_count = sum(1 for res in results if res["label"] == "negative")
         clickbait_ratio = (negative_count / len(comments)) * 100
 
-        if clickbait_ratio >= 50:
+        if clickbait_ratio >= 45:
             overall = "clickbait"
         elif clickbait_ratio >= 30:
             overall = "neutral"

@@ -4,9 +4,6 @@
     }
 }
 @media screen and (min-width: 640px) and (max-width: 991px){
-    p {
-        font-size: 19px;
-    }
     h1 {
         font-size: 28px;
     }
@@ -30,6 +27,12 @@
     h1 {
         font-size: 30px;
     }
+    h2 {
+        font-size: 25px;
+    }
+    h3 {
+        font-size: 22px;
+    }
     footer > a {
         font-size: 16px;
     }
@@ -52,6 +55,12 @@
     }
     h1 {
         font-size: 30px;
+    }
+    h2 {
+        font-size: 25px;
+    }
+    h3 {
+        font-size: 23px;
     }
     footer > a {
         font-size: 16px;

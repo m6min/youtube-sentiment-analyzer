@@ -1,6 +1,5 @@
 import httpx
 from fastapi import HTTPException
-
 from app.core.config import settings
 from app.utils.text_cleaning import clean_text
 
@@ -15,7 +14,7 @@ async def get_video_details(video_id: str) -> dict:
     params = {
         "part": "snippet,statistics",
         "id": video_id,
-        "key": settings.YOUTUBE_API_KEY
+        "key": settings.YOUTUBE_API_KEY.get_secret_value()
     }
     async with httpx.AsyncClient() as client:
         response = await client.get(YOUTUBE_API_URL, params=params)
@@ -56,12 +55,12 @@ async def get_video_comments(video_id: str, channel_owner_id: str, max_pages: in
     comments = []
     next_page_token = None
     pages_fetched = 0
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=10.0) as client:
         while pages_fetched < max_pages:
             params = {
                 "part": "snippet",
                 "videoId": video_id,
-                "key": settings.YOUTUBE_API_KEY,
+                "key": settings.YOUTUBE_API_KEY.get_secret_value(),
                 "maxResults": 100,
                 "textFormat": "plainText"
             }
@@ -90,7 +89,7 @@ async def get_video_comments(video_id: str, channel_owner_id: str, max_pages: in
                             "like_count": comment_snippet["likeCount"],
                             "published_at": comment_snippet["publishedAt"]
                         })
-            next_page_token = data.get("pageToken")
+            next_page_token = data.get("nextPageToken")
             pages_fetched += 1
             if not next_page_token:
                 break
