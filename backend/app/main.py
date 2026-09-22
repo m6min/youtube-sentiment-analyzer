@@ -1,8 +1,10 @@
 import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.config import settings
+
 from app.apiv1.api import router
+from app.core.config import settings
 
 app = FastAPI(title="Youtube Analyzer API", version="1.0")
 

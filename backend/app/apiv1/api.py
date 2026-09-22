@@ -1,7 +1,10 @@
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime,timedelta, timezone
-from app.crud.crud_comment import create_comments
+from sqlalchemy.future import select
+
+from app.crud.crud_comment import create_comments, delete_comms_by_video
 from app.crud.crud_video import create_video, get_video
 from app.db.session import get_db
 from app.services.model import analyzer_service
@@ -54,12 +57,17 @@ async def analyze(request: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
         db_video.is_analyzed = True
         db_video.clickbait_score = nlp_results["clickbait_score"]
         db_video.overall_sentiment = nlp_results["overall_sentiment"]
+        db_video.created_at = datetime.now(timezone.utc)
         await db.commit()
+        if comments_data:
+            await delete_comms_by_video(db, video_id)
+            await create_comments(db, video_id, comments_data)
     else:
     # WE DONT HAVE VIDEO ON DB
         video_data["is_analyzed"] = True
         video_data["clickbait_score"] = nlp_results["clickbait_score"]
         video_data["overall_sentiment"] = nlp_results["overall_sentiment"]
+        video_data["created_at"] = datetime.now(timezone.utc)
         await create_video(db, video_data)
 
 
@@ -79,3 +87,4 @@ async def analyze(request: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
                             "overall_sentiment": nlp_results["overall_sentiment"]
                         }
     }
+

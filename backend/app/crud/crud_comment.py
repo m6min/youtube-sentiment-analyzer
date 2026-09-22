@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy import delete
 from app.db.models import Comment
 
 
@@ -22,3 +22,8 @@ async def create_comments(db: AsyncSession, video_id: str, comment_data: list) -
     db.add_all(db_comment_objects)
     await db.commit()
     return len(db_comment_objects)
+
+async def delete_comms_by_video(db: AsyncSession, video_id: str):
+    query = delete(Comment).where(Comment.video_id == video_id)
+    await db.execute(query)
+    await db.commit()
