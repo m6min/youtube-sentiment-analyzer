@@ -2,10 +2,9 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
 from app.crud.crud_comment import create_comments, delete_comms_by_video
-from app.crud.crud_video import create_video, get_video
+from app.crud.crud_video import create_video, get_video, get_weekly_rankings
 from app.db.session import get_db
 from app.services.model import analyzer_service
 from app.services.youtube import get_video_comments, get_video_details
@@ -88,3 +87,28 @@ async def analyze(request: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
                         }
     }
 
+@router.get("/rankings")
+async def get_rankings(db: AsyncSession = Depends(get_db)):
+    try:
+        results = await get_weekly_rankings(db)
+        if not results:
+            return {
+                "status": "success",
+                "message": "There is no analyzed video for this week yet.",
+                "rankings": []
+            }
+        formatted_videos = []
+        for res in results:
+            formatted_videos.append({
+                "video_id": res.id,
+                "title": res.title,
+                "clickbait_score": res.clickbait_score,
+                "thumbnail_url": f"https://img.youtube.com/vi/{res.id}/hqdefault.jpg",
+            })
+        return {
+            "status": "success",
+            "message": "Top 5 video has been fetched from database.",
+            "rankings": formatted_videos
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"There is an error occurred while getting rankings: {str(e)}")
