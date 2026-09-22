@@ -24,8 +24,9 @@ async def analyze(request: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid video url")
     db_video = await get_video(db, video_id)
     if db_video and db_video.is_analyzed:
-        days_passed = (datetime.now(timezone.utc) - db_video.created_at).days
-        if days_passed < 10:
+        now = datetime.now(timezone.utc)
+        ten_days_ago = now - timedelta(days=10)
+        if db_video.created_at > ten_days_ago:
             return {
                 "status": "success",
                 "source": "database",
