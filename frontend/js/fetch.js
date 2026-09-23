@@ -1,7 +1,7 @@
 const BACKEND = "http://localhost:8000"
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const rankingsGrid = document.querySelector('.rankings-grid');
+    const rankingsGrid = document.querySelector('.ranking-grid');
     const errorDiv = document.querySelector('#errorDiv');
 
     try {
