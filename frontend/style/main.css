@@ -153,3 +153,12 @@ footer {
 footer > a {
     font-size: 13px;
 }
+/* RANKINGS.HTML */
+.thumbnail {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 8px;
+}
+.ranking-grid {
+    text-align: left !important;
+}

@@ -24,7 +24,7 @@ async def create_video(db: AsyncSession, video_data: dict):
     return db_video
 
 async def get_weekly_rankings(db: AsyncSession):
-    seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    seven_days_ago = (datetime.now(timezone.utc) - timedelta(days=7)).replace(tzinfo=None)
     query = (
         select(Video).where(
             Video.is_analyzed == True,

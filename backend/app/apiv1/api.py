@@ -56,7 +56,7 @@ async def analyze(request: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
         db_video.is_analyzed = True
         db_video.clickbait_score = nlp_results["clickbait_score"]
         db_video.overall_sentiment = nlp_results["overall_sentiment"]
-        db_video.created_at = datetime.now(timezone.utc)
+        db_video.created_at = datetime.now(timezone.utc).replace(tzinfo=None)
         await db.commit()
         if comments_data:
             await delete_comms_by_video(db, video_id)
@@ -66,7 +66,7 @@ async def analyze(request: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
         video_data["is_analyzed"] = True
         video_data["clickbait_score"] = nlp_results["clickbait_score"]
         video_data["overall_sentiment"] = nlp_results["overall_sentiment"]
-        video_data["created_at"] = datetime.now(timezone.utc)
+        video_data["created_at"] = datetime.now(timezone.utc).replace(tzinfo=None)
         await create_video(db, video_data)
 
 
