@@ -8,6 +8,12 @@ const loadingDiv = document.querySelector("#loadingDiv");
 const errorDiv = document.querySelector("#errorDiv");
 const resultDiv = document.querySelector("#resultDiv");
 
+let clientId = localStorage.getItem("clientId");
+if (!clientId) {
+    clientId = crypto.randomUUID(); 
+    localStorage.setItem("clientId", clientId);
+}
+
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -28,7 +34,8 @@ startBtn.addEventListener('click', async () => {
             fetch(`${BACKEND}/analyze`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-Client-ID': clientId
                 },
                 body: JSON.stringify({ video_url: url})
             }),

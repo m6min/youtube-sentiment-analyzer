@@ -13,11 +13,14 @@
     box-sizing: border-box;
     font-family: "Manrope", sans-serif;
     color: var(--primary-text);
-    text-align: center;
 }
 ::selection {
     background-color: var(--primary-text);
     color: var(--main-bg);
+}
+body {
+    text-align: center;
+    color: var(--primary-text);
 }
 h1, h2, h3, h4, h5, h6 {
     font-weight: var(--header-weight);
@@ -144,6 +147,7 @@ input::placeholder {
     border-radius: 10px;
     margin: 30px auto;
     padding: 30px;
+    max-width: 350px;
 }
 footer {
     margin: 30px auto;
@@ -154,11 +158,25 @@ footer > a {
     font-size: 13px;
 }
 /* RANKINGS.HTML */
+.rankings-container {
+    padding: 30px;
+}
 .thumbnail {
     width: 100%;
     max-width: 300px;
     border-radius: 8px;
+    display: block;
 }
 .ranking-grid {
-    text-align: left !important;
+    text-align: left;
+    display: grid;
+    gap: 20px;
+}
+.video-card {
+    display: grid;
+    gap: 16px;
+}
+.card-content > h3 {
+    font-size: 20px;
+    margin: 0 0 10px;
 }

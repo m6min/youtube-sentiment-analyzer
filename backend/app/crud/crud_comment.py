@@ -1,5 +1,6 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.db.models import Comment
 
 

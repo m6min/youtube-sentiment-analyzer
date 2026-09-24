@@ -1,6 +1,8 @@
+from datetime import datetime, timedelta, timezone
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from datetime import datetime,timedelta,timezone
+
 from app.db.models import Video
 
 

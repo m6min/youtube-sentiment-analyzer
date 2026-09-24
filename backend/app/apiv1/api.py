@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.crud_comment import create_comments, delete_comms_by_video
 from app.crud.crud_video import create_video, get_video, get_weekly_rankings
 from app.db.session import get_db
+from app.limiter import limiter
 from app.services.model import analyzer_service
 from app.services.youtube import get_video_comments, get_video_details
 from app.utils.extract_video_id import extract_video_id
@@ -19,8 +20,9 @@ async def health():
     return {"live": True}
 
 @router.post("/analyze")
-async def analyze(request: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
-    url = str(request.video_url)
+@limiter.limit("5/minute")
+async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
+    url = str(payload.video_url)
     video_id = extract_video_id(url)
     if not video_id:
         raise HTTPException(status_code=400, detail="Invalid video url")
@@ -88,6 +90,7 @@ async def analyze(request: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
     }
 
 @router.get("/rankings")
+@limiter.limit("30/minute")
 async def get_rankings(db: AsyncSession = Depends(get_db)):
     try:
         results = await get_weekly_rankings(db)
