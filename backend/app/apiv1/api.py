@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -13,6 +14,9 @@ from app.utils.extract_video_id import extract_video_id
 
 from .request import AnalyzeRequest
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
 
 @router.get("/health")
@@ -24,6 +28,7 @@ async def health():
 async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
     url = str(payload.video_url)
     video_id = extract_video_id(url)
+    logger.info("New analyze requested. Video id: %s", video_id)
     if not video_id:
         raise HTTPException(status_code=400, detail="Invalid video url")
     db_video = await get_video(db, video_id)
@@ -31,6 +36,7 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
         now = datetime.now(timezone.utc)
         ten_days_ago = now - timedelta(days=10)
         if db_video.created_at > ten_days_ago:
+            logging.info("Video has found on cache, returning with id: %s", video_id)
             return {
                 "status": "success",
                 "source": "database",
@@ -49,9 +55,12 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
     comments_data = await get_video_comments(video_id, owner_id)
 
     if not comments_data:
+        logger.warning("No comment found for this video: %s", video_id)
         nlp_results = {"clickbait_score": 0.0, "overall_sentiment": "undefined"}
     else:
+        logger.info("Model is working.. %s comment will be analyzed", len(comments_data))
         nlp_results = analyzer_service.analyze_comments(comments_data)
+        logger.info("Analyze is over, clickbait score: %s", nlp_results["clickbait_score"])
 
     # IF VIDEO EXISTS IN DB BUT HAVE NOT ANALYZED
     if db_video:
