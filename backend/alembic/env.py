@@ -3,15 +3,14 @@ import os
 import sys
 from logging.config import fileConfig
 
-from dotenv import load_dotenv
-from sqlalchemy import pool
-from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
-
 import app.db.models
 from alembic import context
 from app.core.config import settings
 from app.db.base import Base
+from dotenv import load_dotenv
+from sqlalchemy import pool
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import async_engine_from_config
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 load_dotenv()

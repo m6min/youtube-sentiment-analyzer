@@ -1,7 +1,6 @@
+from app.db.models import Comment
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.db.models import Comment
 
 
 async def create_comments(db: AsyncSession, video_id: str, comment_data: list) -> int:

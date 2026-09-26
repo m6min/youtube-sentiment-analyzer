@@ -1,8 +1,7 @@
 import httpx
-from fastapi import HTTPException
-
 from app.core.config import settings
 from app.utils.text_cleaning import clean_text
+from fastapi import HTTPException
 
 YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3/videos"
 
@@ -83,6 +82,8 @@ async def get_video_comments(video_id: str, channel_owner_id: str, max_pages: in
                         if comment_author_id == channel_owner_id:
                             continue
                         clean_comment = clean_text(comment_snippet["textDisplay"])
+                        if not clean_comment:
+                            continue
                         comments.append({
                             "comment_id": comment_id,
                             "author": comment_snippet["authorDisplayName"],

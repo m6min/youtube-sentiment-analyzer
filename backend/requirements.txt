@@ -1,3 +1,10 @@
 fastapi[standard]
 pydantic-settings
 httpx
+SQLAlchemy[asyncio]
+asyncpg
+alembic
+slowapi
+python-dotenv
+emoji
+pytest

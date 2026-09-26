@@ -1,16 +1,15 @@
 import logging
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.crud.crud_comment import create_comments, delete_comms_by_video
 from app.crud.crud_video import create_video, get_video, get_weekly_rankings
 from app.db.session import get_db
 from app.limiter import limiter
-from app.services.model import analyzer_service
+from app.services.model import analyze_comments
 from app.services.youtube import get_video_comments, get_video_details
 from app.utils.extract_video_id import extract_video_id
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .request import AnalyzeRequest
 
@@ -33,7 +32,7 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
         raise HTTPException(status_code=400, detail="Invalid video url")
     db_video = await get_video(db, video_id)
     if db_video and db_video.is_analyzed:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         ten_days_ago = now - timedelta(days=10)
         if db_video.created_at > ten_days_ago:
             logging.info("Video has found on cache, returning with id: %s", video_id)
@@ -59,7 +58,7 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
         nlp_results = {"clickbait_score": 0.0, "overall_sentiment": "undefined"}
     else:
         logger.info("Model is working.. %s comment will be analyzed", len(comments_data))
-        nlp_results = analyzer_service.analyze_comments(comments_data)
+        nlp_results = await analyze_comments(comments_data)
         logger.info("Analyze is over, clickbait score: %s", nlp_results["clickbait_score"])
 
     # IF VIDEO EXISTS IN DB BUT HAVE NOT ANALYZED
@@ -100,7 +99,7 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
 
 @router.get("/rankings")
 @limiter.limit("30/minute")
-async def get_rankings(db: AsyncSession = Depends(get_db)):
+async def get_rankings(request: Request, db: AsyncSession = Depends(get_db)):
     try:
         results = await get_weekly_rankings(db)
         if not results:
@@ -123,4 +122,5 @@ async def get_rankings(db: AsyncSession = Depends(get_db)):
             "rankings": formatted_videos
         }
     except Exception as e:
+        logger.warning("An error occurred on rankings endpoint: %s", str(e))
         raise HTTPException(status_code=500, detail=f"There is an error occurred while getting rankings: {str(e)}")
