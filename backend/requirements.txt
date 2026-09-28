@@ -8,3 +8,5 @@ slowapi
 python-dotenv
 emoji
 pytest
+pandas
+scikit-learn

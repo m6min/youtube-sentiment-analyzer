@@ -58,7 +58,7 @@ async def analyze_comments(comments: list[dict]) -> dict:
 
         clickbait_ratio = (negative_count / analyzed_count) * 100
 
-        if clickbait_ratio >= 45:
+        if clickbait_ratio >= 40:
             overall = "clickbait"
         elif clickbait_ratio >= 25:
             overall = "neutral"
