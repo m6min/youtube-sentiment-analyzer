@@ -1,17 +1,18 @@
-import os
-from contextlib import asynccontextmanager
-from pathlib import Path
 import asyncio
+import os
 from contextlib import asynccontextmanager, suppress
+from pathlib import Path
+
 import joblib
 from app.apiv1.api import router
 from app.core.config import settings
-from app.render.ping import self_ping
 from app.limiter import limiter
+from app.render.ping import self_ping
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

@@ -1,5 +1,8 @@
 import asyncio
+
 import httpx
+
+
 async def self_ping():
     """Pings the /health endpoint every 10 mins"""
     await asyncio.sleep(10)

@@ -1,12 +1,11 @@
 import logging
 from datetime import datetime, timedelta, timezone
 
-from app.services.model import analyze_title
 from app.crud.crud_comment import create_comments, delete_comms_by_video
 from app.crud.crud_video import create_video, get_video, get_weekly_rankings
 from app.db.session import get_db
 from app.limiter import limiter
-from app.services.model import analyze_comments
+from app.services.model import analyze_comments, analyze_title
 from app.services.youtube import get_video_comments, get_video_details
 from app.utils.extract_video_id import extract_video_id
 from app.utils.get_score import get_overall
