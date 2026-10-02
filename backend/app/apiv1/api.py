@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta, timezone
 
+from app.services.model import analyze_title
 from app.crud.crud_comment import create_comments, delete_comms_by_video
 from app.crud.crud_video import create_video, get_video, get_weekly_rankings
 from app.db.session import get_db
@@ -8,6 +9,7 @@ from app.limiter import limiter
 from app.services.model import analyze_comments
 from app.services.youtube import get_video_comments, get_video_details
 from app.utils.extract_video_id import extract_video_id
+from app.utils.get_score import get_overall
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -25,6 +27,7 @@ async def health():
 @router.post("/analyze")
 @limiter.limit("5/minute")
 async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
+
     url = str(payload.video_url)
     video_id = extract_video_id(url)
     logger.info("New analyze requested. Video id: %s", video_id)
@@ -53,19 +56,23 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
     owner_id = video_data["channel_id"]
     comments_data = await get_video_comments(video_id, owner_id)
 
+    model = request.app.state.title_analyze_model
     if not comments_data:
         logger.warning("No comment found for this video: %s", video_id)
-        nlp_results = {"clickbait_score": 0.0, "overall_sentiment": "undefined"}
+        title_score = analyze_title(video_data['title'], model)
+        results = get_overall(title_score=title_score)
     else:
-        logger.info("Model is working.. %s comment will be analyzed", len(comments_data))
-        nlp_results = await analyze_comments(comments_data)
-        logger.info("Analyze is over, clickbait score: %s", nlp_results["clickbait_score"])
+        logger.info("Model is working.. %s comment and title will be analyzed", len(comments_data))
+        nlp_result = await analyze_comments(comments_data)
+        title_score = analyze_title(video_data['title'], model)
+        results = get_overall(nlp_result, title_score)
+        logger.info("Analyze is over, clickbait score: %s", results["clickbait_score"])
 
     # IF VIDEO EXISTS IN DB BUT HAVE NOT ANALYZED
     if db_video:
         db_video.is_analyzed = True
-        db_video.clickbait_score = nlp_results["clickbait_score"]
-        db_video.overall_sentiment = nlp_results["overall_sentiment"]
+        db_video.clickbait_score = results["clickbait_score"]
+        db_video.overall_sentiment = results["overall_sentiment"]
         db_video.created_at = datetime.now(timezone.utc).replace(tzinfo=None)
         await db.commit()
         if comments_data:
@@ -74,8 +81,8 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
     else:
     # WE DONT HAVE VIDEO ON DB
         video_data["is_analyzed"] = True
-        video_data["clickbait_score"] = nlp_results["clickbait_score"]
-        video_data["overall_sentiment"] = nlp_results["overall_sentiment"]
+        video_data["clickbait_score"] = results["clickbait_score"]
+        video_data["overall_sentiment"] = results["overall_sentiment"]
         video_data["created_at"] = datetime.now(timezone.utc).replace(tzinfo=None)
         await create_video(db, video_data)
 
@@ -92,8 +99,8 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
         "message": "Video has been analyzed and saved into database",
         "comments": comments_data,
         "analyze_results":{
-                            "clickbait_score": nlp_results["clickbait_score"],
-                            "overall_sentiment": nlp_results["overall_sentiment"]
+                            "clickbait_score": results["clickbait_score"],
+                            "overall_sentiment": results["overall_sentiment"]
                         }
     }
 

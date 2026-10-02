@@ -26,7 +26,7 @@ startBtn.addEventListener('click', async () => {
     }
     hideError();
     loadingDiv.classList.remove("hidden");
-    startBtn.ariaDisabled = true;
+    startBtn.disabled = true;
     const MIN_LOADING_TIME = 1000;
     try {
         // POST REQUEST ->>>>>>>
