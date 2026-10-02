@@ -1,10 +1,12 @@
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
-
+import asyncio
+from contextlib import asynccontextmanager, suppress
 import joblib
 from app.apiv1.api import router
 from app.core.config import settings
+from app.render.ping import self_ping
 from app.limiter import limiter
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,10 +19,16 @@ async def lifespan(app: FastAPI):
     PATH =Path(__file__).parent
     MODEL_PATH = PATH / "services" / "local_model" / "v1" / "model_v1.joblib"
     app.state.title_analyze_model = joblib.load(MODEL_PATH)
+    ping_task = asyncio.create_task(self_ping())
 
-    yield
+    try:
+        yield
+    finally:
+        ping_task.cancel()
+        with suppress(asyncio.CancelledError):
+            await ping_task
 
-    app.state.title_analyze_model = None
+        app.state.title_analyze_model = None
 
 app = FastAPI(lifespan=lifespan, title="Clickbait Analyzer API", version="1.0")
 
