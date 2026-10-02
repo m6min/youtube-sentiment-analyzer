@@ -1,4 +1,4 @@
-const BACKEND = "http://localhost:8000"
+const BACKEND = "https://yt-analyzer-p56w.com";
 
 document.addEventListener('DOMContentLoaded', async () => {
     let clientId = localStorage.getItem("clientId");

@@ -1,5 +1,5 @@
 // APPLICATION URL
-const BACKEND = "http://localhost:8000"
+const BACKEND = "https://yt-analyzer-p56w.com";
 
 
 const startBtn = document.querySelector("#analyzeBtn");
