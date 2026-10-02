@@ -1,5 +1,5 @@
 // APPLICATION URL
-const BACKEND = "https://yt-analyzer-p56w.com";
+const BACKEND = "https://yt-analyzer-p56w.onrender.com";
 
 
 const startBtn = document.querySelector("#analyzeBtn");

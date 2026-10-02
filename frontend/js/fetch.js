@@ -1,4 +1,4 @@
-const BACKEND = "https://yt-analyzer-p56w.com";
+const BACKEND = "https://yt-analyzer-p56w.onrender.com";
 
 document.addEventListener('DOMContentLoaded', async () => {
     let clientId = localStorage.getItem("clientId");
