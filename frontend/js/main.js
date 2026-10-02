@@ -67,8 +67,8 @@ startBtn.addEventListener('click', async () => {
 
 const explanations = {
     "relevant": "Video has a minimal chance to be clickbait.",
-    "neutral": "Video's comments are mostly neutral, can be clickbait.",
-    "clickbait": "Video is a clickbait according to comments."
+    "neutral": "Comments and title are mostly neutral, can't say anything for sure.",
+    "clickbait": "Video is a clickbait according to our analyses."
 }
 
 function displayResults(data) {
