@@ -10,6 +10,7 @@ from app.services.youtube import get_video_comments, get_video_details
 from app.utils.extract_video_id import extract_video_id
 from app.utils.get_score import get_overall
 from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .request import AnalyzeRequest
@@ -22,6 +23,20 @@ router = APIRouter()
 @router.get("/health")
 async def health():
     return {"live": True}
+
+@router.get("/health/db")
+async def health_db(db: AsyncSession = Depends(get_db)):
+    try:
+        await db.execute(text("SELECT 1"))
+        return {
+            "status": "ok",
+            "database": "connected"
+        }
+    except Exception:
+        raise HTTPException(
+            status_code=503,
+            detail="Database is unavailable"
+        )
 
 @router.post("/analyze")
 @limiter.limit("5/minute")

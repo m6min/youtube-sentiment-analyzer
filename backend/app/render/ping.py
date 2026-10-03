@@ -11,7 +11,7 @@ async def self_ping():
         while True:
             try:
                 response = await client.get(
-                    "https://yt-analyzer-p56w.onrender.com/health",
+                    "https://yt-analyzer-p56w.onrender.com/health/db",
                     timeout=10
                 )
                 print("Self-ping:", response.status_code)
