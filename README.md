@@ -10,6 +10,12 @@ The frontend is available here:
 
 [Check Live Demo Here](https://yt-analyzer-eosin.vercel.app/)
 
+## Why I Built This Project
+
+This project was built to practice designing and connecting a complete machine learning product: collecting external data, cleaning text, running models, combining results, storing data, exposing an API, building a frontend, and deploying the system with Docker / while seperating frontend and backend code.
+
+The most valuable part of the project is the end-to-end workflow and the engineering decisions around it. The predictions are intentionally presented as experimental signals, while the architecture is designed to be extended with better datasets, model evaluation, and more reliable scoring in the future.
+
 ## What the project does
 
 1. Accepts a YouTube video URL.
@@ -305,9 +311,3 @@ pytest
 
 - The title dataset is relatively small and not perfectly balanced. Updates will come soon.
 - The comment model measures sentiment, not clickbait directly. Project or results can not be used for serious decisions.
-
-## Why I Built This Project
-
-This project was built to practice designing and connecting a complete machine learning product: collecting external data, cleaning text, running models, combining results, storing data, exposing an API, building a frontend, and deploying the system with Docker.
-
-The most valuable part of the project is the end-to-end workflow and the engineering decisions around it. The predictions are intentionally presented as experimental signals, while the architecture is designed to be extended with better datasets, model evaluation, and more reliable scoring in the future.
