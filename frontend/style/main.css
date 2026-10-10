@@ -180,3 +180,6 @@ footer > a {
     font-size: 20px;
     margin: 0 0 10px;
 }
+#no-data {
+    text-align: center;
+}

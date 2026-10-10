@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             throw new Error(data.detail || "Couldn't fetched data.");
         }
         if (data.rankings.length === 0) {
-            rankingsGrid.innerHTML = `<p>${data.message}</p>`;
+            rankingsGrid.innerHTML = `<p id="no-data">${data.message}</p>`;
             document.querySelector(".page-title").classList.add("hidden");
             return;
         }
