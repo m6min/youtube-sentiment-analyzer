@@ -2,7 +2,7 @@
 
 An end-to-end machine learning project that analyzes YouTube videos from their titles and viewer comments, then produces an experimental clickbait score.
 
-The project combines a locally trained title classifier with Turkish sentiment analysis for comments. It also stores analyzed videos in PostgreSQL so recent results can be reused instead of sending the same video to external APIs every time.
+At the start the project was designed to combine a locally trained title classifier with Turkish sentiment analysis for comments. But after HuggingFace's latest API limits, I integrated Groq API to make demo accessible. It also stores analyzed videos in PostgreSQL so recent results can be reused instead of sending the same video to external APIs every time.
 
 ## Live Demo
 
@@ -22,7 +22,7 @@ The most valuable part of the project is the end-to-end workflow and the enginee
 2. Fetches video details and public comments through the YouTube Data API.
 3. Cleans comments and removes empty or unusable text.
 4. Analyzes the title with a local Logistic Regression model.
-5. Analyzes comment sentiment with a Turkish Hugging Face model (savasy/bert-base-turkish-sentiment-cased).
+5. Analyzes comment sentiment with a Groq API entegration.
 6. Combines the title and comment scores into one experimental score between 0 and 100.
 7. Saves the result and comments in PostgreSQL.
 8. Returns cached results for recently analyzed videos.
@@ -34,7 +34,6 @@ The score is designed as a practical project signal, not as a definitive judgmen
 
 - FastAPI backend with interactive Swagger documentation
 - YouTube Data API integration
-- Turkish comment sentiment analysis through the Hugging Face Inference API
 - Local title classification model using scikit-learn
 - PostgreSQL database with asynchronous SQLAlchemy
 - Alembic database migrations
@@ -54,7 +53,7 @@ The title model returns a probability-like score between 0 and 100 based on:
 - Exclamation mark count
 - Uppercase letter ratio
 
-The comment model calculates the percentage of analyzed comments classified as negative by the Turkish sentiment model. This is used as a comment-based signal and should not be interpreted as a direct clickbait measurement.
+The comment model calculates the percentage of analyzed comments classified as negative by the a open source LLM. This is used as a comment-based signal and should not be interpreted as a direct clickbait measurement.
 
 The final score is calculated using an equal-weight combination:
 
@@ -92,8 +91,7 @@ The model and thresholds are intentionally treated as an experimental baseline. 
 - joblib
 - TF-IDF vectorization
 - Logistic Regression
-- Hugging Face Inference API
-- Turkish BERT sentiment model
+- Groq Open Source LLM API
 
 ### Frontend
 
@@ -159,10 +157,10 @@ POSTGRES_PASSWORD=your_postgres_password
 POSTGRES_DB=youtube_analyzer
 POSTGRES_SERVER=localhost
 POSTGRES_PORT=5432
-HF_TOKEN=your_huggingface_token
 ALLOWED_ORIGINS=http://localhost:5500,http://127.0.0.1:5500
+GROQ_API_KEY=apikey
 ```
-
+You can get a API key on console.groq.com in seconds.
 For a deployed backend, set the environment variables in the hosting provider's dashboard. The production `ALLOWED_ORIGINS` value should contain the exact frontend origin, without a trailing slash:
 
 ```env
