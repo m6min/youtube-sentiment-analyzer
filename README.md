@@ -59,7 +59,7 @@ The comment model calculates the percentage of analyzed comments classified as n
 The final score is calculated using an equal-weight combination:
 
 ```text
-final score = (title score × 0.5) + (comment score × 0.5)
+final score = (title score × 0.4) + (comment score × 0.6)
 ```
 
 The current score categories are:
@@ -310,4 +310,4 @@ pytest
 ## Limitations and Future Improvements
 
 - The title dataset is relatively small and not perfectly balanced. Updates will come soon.
-- The comment model measures sentiment, not clickbait directly. Project or results can not be used for serious decisions.
+- The comment model measures sentiment, not clickbait directly. Dont use the results for serious decisions.
