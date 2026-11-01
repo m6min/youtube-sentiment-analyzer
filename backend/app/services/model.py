@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 API_URL = (
-    "https://router.huggingface.co/hf-inference/models/"
+    "https://api-inference.huggingface.co/models/"
     "savasy/bert-base-turkish-sentiment-cased"
 )
 
@@ -22,7 +22,9 @@ async def analyze_comments(comments: list[dict]) -> float:
     ]
     if not truncated_comments:
         return 0.0
-    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+    headers = {"Authorization": f"Bearer {HF_TOKEN}",
+            "x-wait-for-model": "true"
+            }
     payload = {"inputs": truncated_comments}
     try:
         async with httpx.AsyncClient() as client:
