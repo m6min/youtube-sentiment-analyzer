@@ -25,18 +25,19 @@ async def analyze_comments(comments: list[dict]) -> float:
         return 0.0
 
     system_prompt = (
-        "Sen sadece JSON formatında yanıt veren bir Türkçe duygu analizi API'sisin. "
-        "Sana verilen yorum dizisindeki her bir yorum için analiz yap ve SADECE şu formatta bir JSON döndür: "
-        "{\"results\": [{\"label\": \"positive\"}, {\"label\": \"negative\"}]}. "
-        "Duygu durumunu belirtmek için sadece 'positive' veya 'negative' kelimelerini kullan."
-        "Asla giriş, gelişme cümlesi veya Markdown (```json gibi) ifadeler veya işaretler kullanma."
+        "You are a strict JSON-only sentiment analysis API. "
+        "Analyze the sentiment of the provided Turkish comments. "
+        "You MUST output ONLY a valid JSON object in this exact format: "
+        "{\"results\": [{\"label\": \"positive\"}, {\"label\": \"negative\"}]} "
+        "Use ONLY 'positive' or 'negative' as labels. Do not include any markdown, greetings, or explanations."
     )
 
     try:
         chat_completion = await client.chat.completions.create(
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Yorumlar:\n{json.dumps(truncated_comments, ensure_ascii=False)}"}
+                {"role": "user", "content": 
+                    f"Comments:\n{json.dumps(truncated_comments, ensure_ascii=False)}\n\nOutput ONLY valid JSON:"}
             ],
             model="openai/gpt-oss-20b",
             temperature=0,
