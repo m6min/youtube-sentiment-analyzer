@@ -38,7 +38,7 @@ async def analyze_comments(comments: list[dict]) -> float:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Yorumlar:\n{json.dumps(truncated_comments, ensure_ascii=False)}"}
             ],
-            model="llama3-8b-8192",
+            model="openai/gpt-oss-20b",
             temperature=0,
             response_format={"type": "json_object"}
         )
