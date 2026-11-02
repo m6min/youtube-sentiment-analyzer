@@ -10,9 +10,9 @@ def get_overall(comment_score: float = 0.0, title_score: float = 0.0) -> dict:
     overall_score = round(
         (comment_score * 0.6) + (title_score * 0.4), 2)
 
-    if overall_score >= 50:
+    if overall_score >= 60:
         overall = "clickbait"
-    elif overall_score >= 30:
+    elif overall_score >= 40:
         overall = "neutral"
     else:
         overall = "relevant"

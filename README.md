@@ -65,9 +65,9 @@ The current score categories are:
 
 | Score | Classification |
 | --- | --- |
-| 0–29.99 | Relevant |
-| 30–49.99 | Neutral |
-| 50–100 | Clickbait |
+| 0–39.99 | Relevant |
+| 40–59.99 | Neutral |
+| 60–100 | Clickbait |
 
 The model and thresholds are intentionally treated as an experimental baseline. The project prioritizes a complete and understandable product flow over claiming benchmark-level prediction accuracy.
 
