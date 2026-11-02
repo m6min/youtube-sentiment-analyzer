@@ -1,5 +1,9 @@
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.crud_comment import create_comments, delete_comms_by_video
 from app.crud.crud_video import create_video, get_video, get_weekly_rankings
@@ -9,9 +13,6 @@ from app.services.model import analyze_comments, analyze_title
 from app.services.youtube import get_video_comments, get_video_details
 from app.utils.extract_video_id import extract_video_id
 from app.utils.get_score import get_overall
-from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from .request import AnalyzeRequest
 
@@ -49,7 +50,7 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
         raise HTTPException(status_code=400, detail="Invalid video url")
     db_video = await get_video(db, video_id)
     if db_video and db_video.is_analyzed:
-        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        now = datetime.now(UTC).replace(tzinfo=None)
         ten_days_ago = now - timedelta(days=10)
         if db_video.created_at > ten_days_ago:
             logging.info("Video has found on cache, returning with id: %s", video_id)
@@ -79,7 +80,7 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
         logger.info("Model is working.. %s comment and title will be analyzed", len(comments_data))
         nlp_result = await analyze_comments(comments_data, request.app.state.sentiment_model)
         title_score = analyze_title(video_data['title'], model)
-        results = get_overall(nlp_result, title_score)
+        results = get_overall(comment_score=nlp_result, title_score=title_score)
         logger.info("Analyze is over, clickbait score: %s", results["clickbait_score"])
 
     # IF VIDEO EXISTS IN DB BUT HAVE NOT ANALYZED
@@ -87,8 +88,9 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
         db_video.is_analyzed = True
         db_video.clickbait_score = results["clickbait_score"]
         db_video.overall_sentiment = results["overall_sentiment"]
-        db_video.created_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        db_video.created_at = datetime.now(UTC).replace(tzinfo=None)
         await db.commit()
+
         if comments_data:
             await delete_comms_by_video(db, video_id)
             await create_comments(db, video_id, comments_data)
@@ -97,7 +99,7 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
         video_data["is_analyzed"] = True
         video_data["clickbait_score"] = results["clickbait_score"]
         video_data["overall_sentiment"] = results["overall_sentiment"]
-        video_data["created_at"] = datetime.now(timezone.utc).replace(tzinfo=None)
+        video_data["created_at"] = datetime.now(UTC).replace(tzinfo=None)
         await create_video(db, video_data)
 
 
@@ -144,4 +146,4 @@ async def get_rankings(request: Request, db: AsyncSession = Depends(get_db)):
         }
     except Exception as e:
         logger.warning("An error occurred on rankings endpoint: %s", str(e))
-        raise HTTPException(status_code=500, detail=f"There is an error occurred while getting rankings: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"There is an error occurred while getting rankings: {e!s}")

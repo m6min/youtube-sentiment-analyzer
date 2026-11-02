@@ -8,7 +8,7 @@ def get_overall(comment_score: float = 0.0, title_score: float = 0.0) -> dict:
     title_score = max(0.0, min(100.0, float(title_score)))
 
     overall_score = round(
-        (comment_score * 0.6) + (title_score * 0.4), 2)
+        (comment_score * 0.7) + (title_score * 0.3), 2)
 
     if overall_score >= 60:
         overall = "clickbait"

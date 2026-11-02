@@ -58,7 +58,7 @@ The comment model calculates the percentage of analyzed comments classified as n
 The final score is calculated using a weighted combination:
 
 ```text
-final score = (title score × 0.4) + (comment score × 0.6)
+final score = (title score × 0.3) + (comment score × 0.7)
 ```
 
 The current score categories are:
