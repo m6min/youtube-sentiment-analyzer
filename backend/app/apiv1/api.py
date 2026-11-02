@@ -40,7 +40,7 @@ async def health_db(db: AsyncSession = Depends(get_db)):
         )
 
 @router.post("/analyze")
-@limiter.limit("5/minute")
+@limiter.limit("3/minute")
 async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = Depends(get_db)):
 
     url = str(payload.video_url)
