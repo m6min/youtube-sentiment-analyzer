@@ -40,12 +40,18 @@ async def analyze_comments(comments: list[dict]) -> float:
                     f"Comments:\n{json.dumps(truncated_comments, ensure_ascii=False)}\n\nOutput ONLY valid JSON:"}
             ],
             model="openai/gpt-oss-20b",
-            temperature=0,
-            response_format={"type": "json_object"}
+            temperature=0
         )
 
-        response_content = chat_completion.choices[0].message.content
-        parsed_data = json.loads(response_content)
+        raw_response = chat_completion.choices[0].message.content.strip()
+        start_idx = raw_response.find('{')
+        end_idx = raw_response.rfind('}')
+        
+        if start_idx != -1 and end_idx != -1:
+            clean_json = raw_response[start_idx:end_idx+1]
+            parsed_data = json.loads(clean_json)
+        else:
+            raise
 
         results = parsed_data.get("results", [])
 
