@@ -1,3 +1,4 @@
+
 import json
 import logging
 import os
@@ -9,71 +10,103 @@ from groq import AsyncGroq
 load_dotenv()
 logger = logging.getLogger(__name__)
 
-
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
 client = AsyncGroq(api_key=GROQ_API_KEY)
 
+
 async def analyze_comments(comments: list[dict]) -> float:
-    """Generates an average negative score for comments on video using Groq API (LLaMA 3)"""
+    """Calculate the percentage of negative Turkish comments."""
+
     truncated_comments = [
         comment["text"][:300]
-        for comment in comments if comment.get("text")
+        for comment in comments
+        if comment.get("text")
     ]
-    
+
     if not truncated_comments:
         return 0.0
 
     system_prompt = (
-        "You are a strict JSON-only sentiment analysis API. "
-        "Analyze the sentiment of the provided Turkish comments. "
-        "You MUST output ONLY a valid JSON object in this exact format: "
-        "{\"results\": [{\"label\": \"positive\"}, {\"label\": \"negative\"}]} "
-        "Use ONLY 'positive' or 'negative' as labels. Do not include any markdown, greetings, or explanations."
+        "You are a Turkish sentiment analysis classifier. "
+        "Classify each comment as positive or negative. "
+        "Return exactly one label per comment in the same order. "
+        "Use only positive or negative labels. "
+        "For neutral or ambiguous comments, choose the closer label."
     )
+
+    response_schema = {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "sentiment_analysis",
+            "strict": True,
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "label": {
+                                    "type": "string",
+                                    "enum": ["positive", "negative"]
+                                }
+                            },
+                            "required": ["label"],
+                            "additionalProperties": False
+                        }
+                    }
+                },
+                "required": ["results"],
+                "additionalProperties": False
+            }
+        }
+    }
 
     try:
         chat_completion = await client.chat.completions.create(
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": 
-                    f"Comments:\n{json.dumps(truncated_comments, ensure_ascii=False)}\n\nOutput ONLY valid JSON:"}
-            ],
             model="openai/gpt-oss-20b",
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        truncated_comments,
+                        ensure_ascii=False
+                    )
+                }
+            ],
+            response_format=response_schema,
+            reasoning_format="hidden",
             temperature=0
         )
 
-        raw_response = chat_completion.choices[0].message.content.strip()
-        start_idx = raw_response.find('{')
-        end_idx = raw_response.rfind('}')
-        
-        if start_idx != -1 and end_idx != -1:
-            clean_json = raw_response[start_idx:end_idx+1]
-            parsed_data = json.loads(clean_json)
-        else:
-            raise
+        raw_response = chat_completion.choices[0].message.content
 
-        results = parsed_data.get("results", [])
+        logger.debug("Groq response: %s", raw_response)
 
-        negative_count = 0
-        analyzed_count = 0
+        if not raw_response:
+            raise ValueError("Groq returned an empty response")
 
-        for res in results:
-            if not isinstance(res, dict):
-                continue
-                
-            label = res.get("label", "").lower()
-            if label not in {"negative", "positive"}:
-                continue
+        parsed_data = json.loads(raw_response)
+        results = parsed_data["results"]
 
-            analyzed_count += 1
-            if label == "negative":
-                negative_count += 1
+        if len(results) != len(truncated_comments):
+            raise ValueError(
+                f"Expected {len(truncated_comments)} labels, "
+                f"but received {len(results)}"
+            )
 
-        if analyzed_count == 0:
-            return 0.0
+        negative_count = sum(
+            1 for result in results
+            if result["label"] == "negative"
+        )
 
-        ratio = (negative_count / analyzed_count) * 100
+        ratio = (negative_count / len(results)) * 100
+
         return round(ratio, 2)
 
     except Exception as err:
@@ -82,19 +115,24 @@ async def analyze_comments(comments: list[dict]) -> float:
 
 
 def analyze_title(title: str, pipeline) -> int:
-    """Generates a clickbait probability using local_model which loaded with lifespan"""
+    """Calculate clickbait probability using local model."""
+
     exclamation_count = title.count('!')
     letters = [i for i in title if i.isalpha()]
     uppercase_ratio = 0.0
-    
+
     if len(letters) > 0:
-        uppercase_ratio = round(sum(1 for i in letters if i.isupper()) / len(letters), 2)
-        
+        uppercase_ratio = round(
+            sum(1 for i in letters if i.isupper()) / len(letters),
+            2
+        )
+
     data = pd.DataFrame({
         'title': [title],
         'exclamation_count': [exclamation_count],
         'uppercase_ratio': [uppercase_ratio]
     })
-    
+
     proba = pipeline.predict_proba(data)[0][1]
+
     return round(proba * 100, 2)
