@@ -8,6 +8,7 @@ from app.apiv1.api import router
 from app.core.config import settings
 from app.limiter import limiter
 from app.render.ping import self_ping
+from app.services.sentiment import SentimentAnalyzer
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -20,6 +21,11 @@ async def lifespan(app: FastAPI):
     PATH =Path(__file__).parent
     MODEL_PATH = PATH / "services" / "local_model" / "v1" / "model_v1.joblib"
     app.state.title_analyze_model = joblib.load(MODEL_PATH)
+    app.state.sentiment_model = SentimentAnalyzer(
+        settings.SENTIMENT_MODEL_DIR,
+        batch_size=settings.SENTIMENT_BATCH_SIZE,
+        max_length=settings.SENTIMENT_MAX_LENGTH,
+    )
     ping_task = asyncio.create_task(self_ping())
 
     try:
@@ -30,6 +36,7 @@ async def lifespan(app: FastAPI):
             await ping_task
 
         app.state.title_analyze_model = None
+        app.state.sentiment_model = None
 
 app = FastAPI(lifespan=lifespan, title="Clickbait Analyzer API", version="1.0")
 

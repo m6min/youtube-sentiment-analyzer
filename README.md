@@ -2,7 +2,7 @@
 
 An end-to-end machine learning project that analyzes YouTube videos from their titles and viewer comments, then produces an experimental clickbait score.
 
-At the start the project was designed to combine a locally trained title classifier with Turkish sentiment analysis for comments. But after HuggingFace's latest API limits, I integrated Groq API to make demo accessible. It also stores analyzed videos in PostgreSQL so recent results can be reused instead of sending the same video to external APIs every time.
+The project combines a locally trained title classifier with a Turkish sentiment classifier. Comment inference runs locally with an INT8 ONNX version of `savasy/bert-base-turkish-sentiment-cased`, without paid inference API calls. It also stores analyzed videos in PostgreSQL so recent results can be reused instead of sending the same video to external APIs every time.
 
 ## Live Demo
 
@@ -22,7 +22,7 @@ The most valuable part of the project is the end-to-end workflow and the enginee
 2. Fetches video details and public comments through the YouTube Data API.
 3. Cleans comments and removes empty or unusable text.
 4. Analyzes the title with a local Logistic Regression model.
-5. Analyzes comment sentiment with a Groq API entegration.
+5. Analyzes comment sentiment locally with an INT8 ONNX model.
 6. Combines the title and comment scores into one experimental score between 0 and 100.
 7. Saves the result and comments in PostgreSQL.
 8. Returns cached results for recently analyzed videos.
@@ -53,9 +53,9 @@ The title model returns a probability-like score between 0 and 100 based on:
 - Exclamation mark count
 - Uppercase letter ratio
 
-The comment model calculates the percentage of analyzed comments classified as negative by the a open source LLM. This is used as a comment-based signal and should not be interpreted as a direct clickbait measurement.
+The comment model calculates the percentage of analyzed comments classified as negative by the Turkish BERT sentiment model. This is used as a comment-based signal and should not be interpreted as a direct clickbait measurement.
 
-The final score is calculated using an equal-weight combination:
+The final score is calculated using a weighted combination:
 
 ```text
 final score = (title score × 0.4) + (comment score × 0.6)
@@ -65,9 +65,9 @@ The current score categories are:
 
 | Score | Classification |
 | --- | --- |
-| 0–39.99 | Relevant |
-| 40–59.99 | Neutral |
-| 60–100 | Clickbait |
+| 0–34.99 | Relevant |
+| 35–54.99 | Neutral |
+| 55–100 | Clickbait |
 
 The model and thresholds are intentionally treated as an experimental baseline. The project prioritizes a complete and understandable product flow over claiming benchmark-level prediction accuracy.
 
@@ -91,7 +91,8 @@ The model and thresholds are intentionally treated as an experimental baseline. 
 - joblib
 - TF-IDF vectorization
 - Logistic Regression
-- Groq Open Source LLM API
+- ONNX Runtime (CPU, dynamic INT8 quantization)
+- Hugging Face Tokenizers
 
 ### Frontend
 
@@ -158,9 +159,10 @@ POSTGRES_DB=youtube_analyzer
 POSTGRES_SERVER=localhost
 POSTGRES_PORT=5432
 ALLOWED_ORIGINS=http://localhost:5500,http://127.0.0.1:5500
-GROQ_API_KEY=apikey
+SENTIMENT_BATCH_SIZE=1
+SENTIMENT_MAX_LENGTH=128
 ```
-You can get a API key on console.groq.com in seconds.
+No Hugging Face or Groq inference API key is required. The public model is downloaded during the Docker build, not on application startup.
 For a deployed backend, set the environment variables in the hosting provider's dashboard. The production `ALLOWED_ORIGINS` value should contain the exact frontend origin, without a trailing slash:
 
 ```env
@@ -307,5 +309,71 @@ pytest
 
 ## Limitations and Future Improvements
 
-- The title dataset is relatively small and not perfectly balanced. Updates will come soon.
+- The title dataset is relatively small and not perfectly balanced for making a real call for 'clickbait'.
 - The comment model measures sentiment, not clickbait directly. Dont use the results for serious decisions.
+
+
+## Local INT8 sentiment inference
+
+The Dockerfile separates model preparation from the application runtime. The build stage downloads the original model,
+exports it to ONNX, and quantizes the MatMul and embedding Gather weights to INT8.
+Only the resulting model, tokenizer, and configuration enter the runtime image;
+PyTorch, Transformers, Optimum, and the FP32 model are not runtime dependencies.
+The first build takes longer and needs more memory than the running service.
+
+The server loads one model instance on startup. Inference runs in a worker thread,
+with a lock preventing concurrent model execution, batch size 1, and a 128-token
+limit including special tokens. These defaults bound inference memory. Keep one
+Uvicorn worker: multiple workers would each load their own model. The existing
+10-day result cache remains active; old cached results retain the old model's score
+until expiry.
+
+### Build and deploy on Render
+
+Use the existing Docker service with `backend` as its root directory and
+`Dockerfile` as its Dockerfile path. Keep the existing YouTube and PostgreSQL
+variables and set `ALLOWED_ORIGINS` to the Vercel frontend origin. No frontend API
+URL change is needed when reusing the same Render service. Leave the Docker start
+command unset so the existing entrypoint runs migrations and starts Uvicorn.
+
+`SENTIMENT_BATCH_SIZE=1` and `SENTIMENT_MAX_LENGTH=128` are the defaults. Raising
+these values increases memory use. The generated artifact's `manifest.json`
+records the exact upstream model revision. The Docker build supports
+`--build-arg MODEL_REVISION=<commit>` to select an immutable model version.
+
+### Reproduce conversion locally
+
+Use a separate Python environment for conversion, then install:
+
+```bash
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+pip install -r backend/requirements-export.txt
+python backend/tools/export_sentiment.py --output backend/app/services/local_model/sentiment --work-dir .artifacts/sentiment-export
+```
+
+Generated model files and conversion work files are excluded from Git. Docker
+rebuilds the artifact automatically, so they do not need to be committed.
+
+Compare FP32 and INT8 predictions on the included smoke examples:
+
+```bash
+python backend/tools/validate_sentiment.py --model-dir backend/app/services/local_model/sentiment --fp32 .artifacts/sentiment-export/fp32/model.onnx
+```
+
+This comparison checks conversion drift, not benchmark accuracy.
+
+### Measure the complete application under a memory limit
+
+From the repository root, on PowerShell:
+
+```powershell
+docker build -t yt-analyzer:int8 backend
+docker run --rm --memory=512m --memory-swap=512m --network=none --entrypoint python --mount "type=bind,source=$((Get-Location).Path)/backend/tools,target=/tools,readonly" -e PYTHONPATH=/code yt-analyzer:int8 /tools/benchmark_sentiment.py
+```
+
+The benchmark loads both models through the real FastAPI lifespan, processes
+1/30/100/500 comments plus concurrent long-comment requests, and reports peak
+process/container memory. It uses dummy configuration, disables keepalive, and
+does not call YouTube or PostgreSQL. It also exercises `/analyze` and `/health` with external I/O mocked. Measured results are recorded in [the benchmark report](backend/docs/int8-benchmark.md). Docker Desktop timings are not Render CPU
+latency guarantees; database and live HTTP behavior need a separate deployment
+smoke check.

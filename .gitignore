@@ -2,5 +2,7 @@
 __pycache__/
 *.pyc
 venv/
+.artifacts/
+backend/app/services/local_model/sentiment/
 .DS_Store
 Thumbs.db

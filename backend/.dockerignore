@@ -1,4 +1,5 @@
 __pycache__/
+**/__pycache__/
 *.pyc
 *.pyo
 *.pyd
@@ -6,9 +7,11 @@ venv/
 env/
 .venv/
 .env
+.env.*
 .git/
 .gitignore
 tests/
 .pytest_cache/
 pytest.ini
 .train/
+app/services/local_model/sentiment

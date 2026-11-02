@@ -77,7 +77,7 @@ async def analyze(request: Request, payload: AnalyzeRequest, db: AsyncSession = 
         results = get_overall(title_score=title_score)
     else:
         logger.info("Model is working.. %s comment and title will be analyzed", len(comments_data))
-        nlp_result = await analyze_comments(comments_data)
+        nlp_result = await analyze_comments(comments_data, request.app.state.sentiment_model)
         title_score = analyze_title(video_data['title'], model)
         results = get_overall(nlp_result, title_score)
         logger.info("Analyze is over, clickbait score: %s", results["clickbait_score"])

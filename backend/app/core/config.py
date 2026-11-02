@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -13,7 +13,9 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_PORT: int = 5432
-    HF_TOKEN: str
+    SENTIMENT_MODEL_DIR: Path = BASE_DIR / "app" / "services" / "local_model" / "sentiment"
+    SENTIMENT_BATCH_SIZE: int = Field(default=1, ge=1, le=8)
+    SENTIMENT_MAX_LENGTH: int = Field(default=128, ge=2, le=512)
 
     @property
     def DATABASE_URL(self) -> str:
