@@ -1,27 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyzed Video Rankings</title>
-    <link rel="stylesheet" href="style/main.css">
-    <link rel="stylesheet" href="style/media.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Weekly Rankings — YouTube Clickbait Analyzer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style/main.css" />
 </head>
 <body>
-    <div class="rankings-container">
-        <h2 style="color: rgb(212, 57, 57);" class="page-title">🔥 This week's best scored analyzed videos</h2>
-        <div class="ranking-grid">
-        </div>
-        <div id="errorDiv" class="box hidden error-box"></div>
+  <div class="rankings-wrap">
+    <div class="topbar">
+      <a class="repo" href="https://github.com/m6min/youtube-sentiment-analyzer" target="_blank" rel="noopener">m6min/youtube-sentiment-analyzer</a>
+      <span class="tag">Experimental project</span>
     </div>
-    <footer>
-      <a href="index.html"
-        >Go home page<i
-          class="icon fa-solid fa-square-arrow-up-right"
-        ></i
-      ></a>
-    </footer>
-    <script src="js/fetch.js"></script>
+
+    <h1>Weekly rankings</h1>
+    <p class="lede">The most clickbaity videos analyzed this week, ordered by score.</p>
+
+    <div id="error" class="error-box hidden" role="alert"></div>
+    <div class="list" id="list"></div>
+  </div>
+
+  <footer class="foot">
+    <a href="index.html">
+      <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" style="transform:rotate(180deg)">
+        <path d="M5 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Go home
+    </a>
+  </footer>
+
+  <script src="js/fetch.js"></script>
 </body>
 </html>
