@@ -12,7 +12,7 @@ The demo is available here to test it live:
 
 ### Sample of a cached result:
 
-<p align="center">
+<p align="left">
   <img
     width="440"
     alt="Example analysis result"
