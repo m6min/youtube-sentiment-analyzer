@@ -10,7 +10,7 @@ The demo is available here to test it live:
 
 [Live Demo](https://yt-analyzer-eosin.vercel.app/)
 
-An example of result cached result sample:
+### Sample of a cached result:
 
 <p align="center">
   <img
