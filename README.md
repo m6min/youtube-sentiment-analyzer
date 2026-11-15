@@ -6,9 +6,19 @@ The project combines a locally trained title classifier with a Turkish sentiment
 
 ## Live Demo
 
-The frontend is available here:
+The demo is available here to test it live:
 
-[Check Live Demo Here](https://yt-analyzer-eosin.vercel.app/)
+[Live Demo](https://yt-analyzer-eosin.vercel.app/)
+
+An example of result cached result sample:
+
+<p align="center">
+  <img
+    width="440"
+    alt="Example analysis result"
+    src="https://github.com/user-attachments/assets/a7bfe4eb-06c8-457a-9d64-bab622bedd7b"
+  />
+</p>
 
 ## Why I Built This Project
 
