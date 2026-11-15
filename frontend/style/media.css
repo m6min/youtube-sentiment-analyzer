@@ -28,7 +28,7 @@
 }
 
 @media (min-width: 1280px) {
-    .container { max-width: 600px; }
+    .container, footer { max-width: 600px; }
     p { font-size: 21px; }
     h3 { font-size: 23px; }
 }

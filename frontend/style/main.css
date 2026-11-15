@@ -1,16 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
-
 :root {
-    --accent: #f5cb5c;
-    --primary-text: #333533;
-    --secondary-text: #cfdbd5;
-    --main-bg: #cfdbd5;
-    --secondary-bg: #333533;
-    --surface: #e8eeea;
-    --muted-text: #555d57;
-    --border: rgba(51, 53, 51, 0.16);
-    --shadow: 0 16px 44px rgba(51, 53, 51, 0.08);
-    --header-weight: 750;
+    --accent: #9bbbd4;
+    --on-accent: #111315;
+    --primary-text: #f5f5f5;
+    --secondary-text: #d8dce0;
+    --main-bg: #111315;
+    --secondary-bg: #111315;
+    --surface: #1a1d20;
+    --muted-text: #aab2b9;
+    --border: rgba(216, 220, 224, 0.16);
+    --header-weight: 600;
     --text-weight: 400;
 }
 
@@ -21,12 +19,12 @@
 }
 
 body, input, button {
-    font-family: "Manrope", sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 ::selection {
     background: var(--accent);
-    color: var(--primary-text);
+    color: var(--on-accent);
 }
 
 body {
@@ -36,14 +34,13 @@ body {
     text-align: center;
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
-    border-top: 5px solid var(--accent);
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: var(--header-weight);
     margin: 30px auto;
     line-height: 1.3;
-    letter-spacing: -0.035em;
+    letter-spacing: -0.015em;
     overflow-wrap: anywhere;
 }
 
@@ -56,14 +53,17 @@ h1 { font-size: 27px; }
 h2 { font-size: 23px; }
 h3 { font-size: 18px; }
 
-.container > h1::after, .page-title::after {
-    content: "";
-    display: block;
-    width: 44px;
-    height: 4px;
-    margin: 20px auto 0;
-    border-radius: 4px;
-    background: var(--accent);
+
+.container > h1, .page-title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+}
+
+.container > h1 {
+    font-size: clamp(30px, 4vw, 40px);
+    line-height: 1.15;
+    margin-bottom: 18px;
 }
 
 p {
@@ -73,6 +73,9 @@ p {
 }
 
 .container > p {
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 44ch;
     color: var(--muted-text);
 }
 
@@ -88,7 +91,7 @@ a {
 }
 
 a:focus-visible, button:focus-visible, input:focus-visible {
-    outline: 3px solid var(--primary-text);
+    outline: 3px solid var(--accent);
     outline-offset: 4px;
 }
 
@@ -99,14 +102,12 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 }
 
 .container {
+    text-align: left;
     width: calc(100% - 32px);
     margin: 30px auto;
     padding: 30px;
     max-width: 450px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    box-shadow: var(--shadow);
+    background: transparent;
 }
 
 .input-group {
@@ -127,8 +128,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .input-group > input {
     min-width: 0;
     width: 100%;
-    border: 1px solid rgba(51, 53, 51, 0.3);
-    border-radius: 12px;
+    border: 1px solid rgba(216, 220, 224, 0.3);
+    border-radius: 4px;
     padding: 10px;
     font-size: 12px;
     background: var(--main-bg);
@@ -143,21 +144,20 @@ input::placeholder {
 }
 
 .input-group > input:focus {
-    border-color: var(--primary-text);
-    box-shadow: 0 0 0 3px rgba(245, 203, 92, 0.5);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(155, 187, 212, 0.3);
 }
 
 .input-group > button {
     min-height: 48px;
-    border: 1px solid rgba(51, 53, 51, 0.2);
-    border-radius: 12px;
+    border: 1px solid rgba(216, 220, 224, 0.2);
+    border-radius: 4px;
     padding: 15px;
     background: var(--accent);
-    color: var(--primary-text);
+    color: var(--on-accent);
     cursor: pointer;
     font-size: 14px;
-    font-weight: 800;
-    box-shadow: 0 3px 0 rgba(51, 53, 51, 0.12);
+    font-weight: 600;
     transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
 }
 
@@ -168,7 +168,7 @@ input::placeholder {
 }
 
 .input-group > button:active:not(:disabled) {
-    box-shadow: none;
+    filter: brightness(0.9);
 }
 
 .hidden {
@@ -185,16 +185,15 @@ input::placeholder {
     z-index: 10;
     position: fixed;
     inset: 0;
-    background: rgba(51, 53, 51, 0.96);
+    background: rgba(17, 19, 21, 0.96);
     color: var(--secondary-text);
-    backdrop-filter: blur(6px);
 }
 
 #loadingDiv::before {
     content: "";
     width: 36px;
     height: 36px;
-    border: 3px solid rgba(207, 219, 213, 0.2);
+    border: 3px solid rgba(216, 220, 224, 0.2);
     border-top-color: var(--accent);
     border-radius: 50%;
     animation: loading-spin 900ms linear infinite;
@@ -210,31 +209,33 @@ input::placeholder {
 
 .box {
     width: 100%;
-    border-radius: 18px;
+    border-radius: 4px;
     margin: 30px auto;
     padding: 30px;
-    max-width: 350px;
+    max-width: 100%;
     overflow-wrap: anywhere;
 }
 
 .error-box {
-    background: rgba(245, 203, 92, 0.22);
-    border: 1px solid rgba(51, 53, 51, 0.3);
-    border-left: 4px solid var(--primary-text);
+    background: rgba(155, 187, 212, 0.12);
+    border: 1px solid rgba(216, 220, 224, 0.3);
+    border-left: 4px solid var(--accent);
     color: var(--primary-text);
     font-size: 14px;
     text-align: left;
 }
 
 #resultDiv {
-    background: var(--secondary-bg);
-    border: 1px solid rgba(51, 53, 51, 0.2);
-    box-shadow: 0 10px 28px rgba(51, 53, 51, 0.12);
+    padding: 26px 0 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
     color: var(--secondary-text);
 }
 
 #videoTitle {
-    color: var(--accent);
+    color: var(--primary-text);
     font-size: 20px;
     margin-top: 0;
 }
@@ -250,14 +251,13 @@ input::placeholder {
 }
 
 .stat-box > h3 {
-    color: var(--secondary-text);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    padding-bottom: 12px;
-    margin: 0 0 12px;
-    border-bottom: 1px solid rgba(207, 219, 213, 0.2);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+    padding-bottom: 0;
+    margin: 0 0 6px;
+    color: var(--muted-text);
 }
 
 .stat-box > p {
@@ -268,8 +268,8 @@ input::placeholder {
 
 #clickbaitScore {
     color: var(--accent);
-    font-size: 36px;
-    font-weight: 800;
+    font-size: 32px;
+    font-weight: 400;
     line-height: 1.2;
     letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
@@ -283,7 +283,7 @@ input::placeholder {
     width: 100%;
     height: 8px;
     border-radius: 10px;
-    background: rgba(207, 219, 213, 0.18);
+    background: rgba(216, 220, 224, 0.18);
     margin-top: 20px;
     overflow: hidden;
 }
@@ -295,6 +295,8 @@ input::placeholder {
 }
 
 footer {
+    text-align: center;
+    width: calc(100% - 32px);
     margin: 30px auto;
     padding: 30px;
     max-width: 450px;
@@ -304,7 +306,7 @@ footer > a {
     font-size: 13px;
     line-height: 1.8;
     text-decoration: underline;
-    text-decoration-color: rgba(51, 53, 51, 0.3);
+    text-decoration-color: rgba(216, 220, 224, 0.3);
     text-underline-offset: 5px;
     text-decoration-thickness: 1px;
     transition: text-decoration-color 160ms ease;
@@ -323,7 +325,7 @@ footer > a {
 .thumbnail {
     width: 100%;
     max-width: 300px;
-    border-radius: 12px;
+    border-radius: 4px;
     display: block;
     border: 1px solid var(--border);
 }
@@ -338,11 +340,10 @@ footer > a {
     display: grid;
     gap: 16px;
     min-width: 0;
-    padding: 20px;
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    background: var(--surface);
-    box-shadow: 0 6px 20px rgba(51, 53, 51, 0.04);
+    padding: 24px 0;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
 }
 
 .card-content {
@@ -357,12 +358,10 @@ footer > a {
 
 .score-container > p {
     display: inline-block;
-    padding: 6px 12px;
-    background: var(--accent);
-    color: var(--primary-text);
-    border-radius: 8px;
+    padding: 0;
+    color: var(--accent);
     font-size: 13px;
-    font-weight: 750;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
 }
 
@@ -370,16 +369,15 @@ footer > a {
     text-align: center;
     padding: 30px;
     background: var(--surface);
-    border: 1px dashed rgba(51, 53, 51, 0.3);
-    border-radius: 18px;
+    border: 1px dashed rgba(216, 220, 224, 0.3);
+    border-radius: 4px;
     color: var(--muted-text);
 }
 
 @media (hover: hover) {
     .input-group > button:hover:not(:disabled) {
-        background: var(--primary-text);
-        color: var(--accent);
-        box-shadow: 0 3px 0 rgba(51, 53, 51, 0.2);
+        background: #b5cddd;
+        color: var(--on-accent);
     }
 
     footer > a:hover {
