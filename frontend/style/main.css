@@ -9,7 +9,7 @@
   --line-strong: rgba(236, 238, 241, 0.18);
 
   /* accents */
-  --accent: #9D7BFF;    /* brand / interactive — electric violet */
+  --accent: #9D7BFF;
   --accent-strong: #B9A2FF;
   --green: #2FD08A;     /* relevant */
   --amber: #F0B23D;     /* neutral */
@@ -179,7 +179,6 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 }
 .title-line b { color: var(--muted); font-weight: 500; }
 
-/* gauge with score inside */
 .gauge-box { position: relative; max-width: 280px; margin: 0 auto; }
 .gauge { width: 100%; display: block; }
 .gauge-track { fill: none; stroke: #23272D; stroke-width: 12; stroke-linecap: round; }
@@ -195,7 +194,6 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   max-width: 38ch;
 }
 
-/* score weights: one stacked bar */
 .weights { text-align: left; padding-top: 18px; border-top: 1px solid var(--line); margin-bottom: 16px; }
 .weights-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; gap: 2px; }
 .weights-legend { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 8px; }
@@ -203,7 +201,6 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .weights-legend i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
 .w-title { background: var(--accent-strong); }
 .w-comments { background: var(--accent); opacity: .55; }
-.weights-legend i.w-comments { opacity: .55; }
 
 /* meta */
 .meta {
@@ -337,5 +334,5 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .needle, .bar-fill, .spinner { transition: none !important; animation: none !important; }
+  .gauge-fill, .spinner { transition: none !important; animation: none !important; }
 }

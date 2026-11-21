@@ -122,15 +122,3 @@ function displayResults(data) {
 
   resultEl.classList.remove("hidden");
 }
-
-// Preview mode: open index.html?demo (or ?demo=neutral / ?demo=relevant) to see a sample result.
-const demo = new URLSearchParams(location.search).get("demo");
-if (demo !== null) {
-  const v = VERDICT[demo] ? demo : "clickbait";
-  displayResults({
-    analyze_results: { overall_sentiment: v, clickbait_score: { clickbait: 78, neutral: 52, relevant: 21 }[v] },
-    video_info: { title: "I Tried Living on $1 for 30 Days (You Won't Believe What Happened)" },
-    source: "youtube_api_and_nlp",
-    comments_count_retrieved: 412
-  });
-}
