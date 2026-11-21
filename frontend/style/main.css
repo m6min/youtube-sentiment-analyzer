@@ -22,13 +22,12 @@ html, body { margin: 0; padding: 0; }
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: "Abolition", system-ui, -apple-system, "Segoe UI", sans-serif;
-  letter-spacing: 0.02em;
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
-.mono { font-family: "Abolition", system-ui, sans-serif; }
+.mono { font-family: "Poppins", system-ui, sans-serif; }
 a { color: inherit; text-decoration: none; }
 
 .hidden { display: none !important; }
@@ -51,9 +50,9 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 34px;
 }
 .repo {
-  font-family: "Lobster", cursive;
-  font-size: 18px;
-  font-weight: 400;
+  font-family: "Poppins", system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--accent);
   transition: opacity .15s ease;
 }
@@ -61,11 +60,11 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- hero ---------- */
 h1 {
-  font-family: "Lobster", cursive;
-  font-size: clamp(32px, 7vw, 46px);
-  line-height: 1.15;
-  letter-spacing: 0;
-  font-weight: 400;
+  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(30px, 6.5vw, 42px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 700;
   margin: 0 0 14px;
 }
 .lede {
@@ -80,11 +79,10 @@ h1 {
 .field { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 12px; }
 .field label {
   grid-column: 1 / -1;
-  font-family: "Abolition", system-ui, sans-serif;
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-family: "Poppins", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--muted);
-  text-transform: uppercase;
 }
 .field input {
   min-width: 0;
@@ -138,118 +136,82 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 /* ---------- result ---------- */
 #result {
-  margin-top: 26px;
-  padding-top: 30px;
-  border-top: 1px solid var(--line);
-}
-
-.verdict-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 4px;
+  margin-top: 28px;
+  padding: 26px 24px 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  text-align: center;
 }
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-family: "Abolition", system-ui, sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.08em;
+  gap: 6px;
+  font-family: "Poppins", system-ui, sans-serif;
+  font-size: 14px;
   font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 3px;
-  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 6px;
 }
-.pill .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill .pill-label { color: var(--muted); font-weight: 400; }
 .pill.clickbait { color: var(--red); background: rgba(255, 90, 95, 0.10); }
 .pill.neutral  { color: var(--amber); background: rgba(240, 178, 61, 0.10); }
 .pill.relevant { color: var(--green); background: rgba(47, 208, 138, 0.10); }
 
 .big-score {
-  font-family: "Abolition", system-ui, sans-serif;
+  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
   font-size: 56px;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
 }
 .big-score .unit { font-size: 26px; color: var(--muted); }
 
 .title-line {
-  color: var(--muted);
-  font-size: 15px;
-  margin: 2px 0 6px;
+  color: var(--faint);
+  font-size: 13px;
+  margin: 0 0 14px;
   overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-.title-line b { color: var(--ink); font-weight: 500; }
+.title-line b { color: var(--muted); font-weight: 500; }
+
+/* gauge with score inside */
+.gauge-box { position: relative; max-width: 280px; margin: 0 auto; }
+.gauge { width: 100%; display: block; }
+.gauge-track { fill: none; stroke: #23272D; stroke-width: 12; stroke-linecap: round; }
+.gauge-fill  { fill: none; stroke: var(--accent); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 0 100; transition: stroke-dasharray .6s cubic-bezier(.22, 1, .36, 1); }
+.gauge-label { font-family: "Poppins", system-ui, sans-serif; font-size: 11px; fill: var(--faint); }
+.gauge-box .big-score { position: absolute; left: 0; right: 0; bottom: 22px; }
+
+.verdict { margin: 14px 0 22px; }
 .explain {
   color: var(--ink);
-  font-size: 16px;
-  margin: 0 0 26px;
+  font-size: 15px;
+  margin: 12px auto 0;
+  max-width: 38ch;
 }
 
-/* gauge */
-.gauge-box { display: flex; justify-content: center; margin: 0 0 6px; }
-.gauge { width: 100%; max-width: 300px; }
-.gauge-track { fill: none; stroke: #23272D; stroke-width: 12; stroke-linecap: round; }
-.gauge-fill  { fill: none; stroke: var(--accent); stroke-width: 12; stroke-linecap: round; }
-.needle { transform-origin: 110px 115px; transform-box: view-box; transform: rotate(-90deg); transition: transform .55s cubic-bezier(.22, 1, .36, 1); }
-.needle line { stroke: var(--ink); stroke-width: 2.5; }
-.gauge-hub { fill: var(--ink); }
-.gauge-label { font-family: "Abolition", system-ui, sans-serif; font-size: 11px; fill: var(--faint); }
-
-.legend {
-  display: flex;
-  justify-content: space-between;
-  font-family: "Abolition", system-ui, sans-serif;
-  font-size: 11px;
-  color: var(--muted);
-  margin: 0 0 30px;
-}
-.legend span { display: inline-flex; align-items: center; gap: 6px; }
-.legend .l-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-
-/* breakdown */
-.break { border-top: 1px solid var(--line); padding-top: 24px; margin-bottom: 20px; }
-.break h2 {
-  font-size: 12px;
-  font-family: "Abolition", system-ui, sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 500;
-  margin: 0 0 18px;
-}
-.bar-row { margin-bottom: 18px; }
-.bar-top {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-.bar-top .w { font-family: "Abolition", system-ui, sans-serif; font-size: 11px; color: var(--muted); }
-.bar-track { height: 6px; background: #1D2126; border-radius: 3px; overflow: hidden; }
-.bar-fill { height: 100%; width: 0; border-radius: 3px; }
+/* score weights: one stacked bar */
+.weights { text-align: left; padding-top: 18px; border-top: 1px solid var(--line); margin-bottom: 16px; }
+.weights-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; gap: 2px; }
+.weights-legend { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.weights-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.weights-legend i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+.w-title { background: var(--accent-strong); }
+.w-comments { background: var(--accent); opacity: .55; }
+.weights-legend i.w-comments { opacity: .55; }
 
 /* meta */
 .meta {
-  font-family: "Abolition", system-ui, sans-serif;
-  font-size: 12px;
-  color: var(--muted);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 18px;
-  margin-bottom: 14px;
-}
-.meta b { color: var(--ink); font-weight: 500; }
-.disclaimer {
   font-size: 12px;
   color: var(--faint);
-  border-left: 2px solid var(--line-strong);
-  padding-left: 12px;
   margin: 0;
 }
+.meta b { color: var(--muted); font-weight: 500; }
 
 /* ---------- footer link ---------- */
 .foot {
@@ -308,7 +270,7 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   border-top: 1px solid var(--line);
 }
 .rank {
-  font-family: "Abolition", system-ui, sans-serif;
+  font-family: "Poppins", system-ui, sans-serif;
   font-size: 18px;
   font-weight: 500;
   color: var(--faint);
@@ -342,13 +304,13 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 }
 .card-score { display: flex; align-items: baseline; gap: 10px; }
 .score-num {
-  font-family: "Abolition", system-ui, sans-serif;
+  font-family: "Poppins", system-ui, sans-serif;
   font-size: 22px;
   font-weight: 500;
   letter-spacing: -0.02em;
 }
 .score-label {
-  font-family: "Abolition", system-ui, sans-serif;
+  font-family: "Poppins", system-ui, sans-serif;
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
